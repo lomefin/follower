@@ -80,7 +80,7 @@ Follower = (function() {
             }
         }
 
-        $.ajax(options).done(function(data){FollowerLogger.log("Data sent: "+ data)});	
+        $.ajax(options).done(function(data){FollowerLogger.log("Data sent: "); FollowerLogger.log(data);});	
 
     	});
 

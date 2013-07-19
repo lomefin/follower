@@ -1,7 +1,17 @@
+class FollowerLogger
+
+  @log: (message) ->
+    console.log "Follower logger", message
+    entry = $('<p class="console-entry">').text(message)
+    $('.console-holder').prepend(entry)
+    
+
 class Follower
   
   status = 'IDLE'
   
+  contructor: ()->
+    @log = Follower.log
 
   bind: ()->
     $('.action-button .track').click(@startTracking)
@@ -9,12 +19,11 @@ class Follower
   
   startTracking: ()=>
     @status = 'TRACKING'
-    console.log "Track started"
+    @log "Track started"
 
 
   stopTracking: ()=>
     @status = 'IDLE'
-    console.log "Track stopped"
+    @log "Track stopped"
 
 window.Follower ?= Follower
-

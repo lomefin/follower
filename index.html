@@ -3,18 +3,40 @@
 <head>
   <title>RoutingUC</title>
 
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css' />
+  <link href="follower.css" rel='stylesheet' type='text/css' />
   <script src="cordova-1.7.0.js"></script>
   <script src="jquery.min.js"></script>
   <script src="follower.js"></script>
 </head>
 <body>
 
-
+<div class="container">
+  <h1>Follower</h1>
+  <div class="row-fluid">
+    <a class="span4 btn btn-primary btn-large action-button track">
+      Start
+    </a>
+    <a class="span4 btn btn-large action-button current">
+      Get current
+    </a>
+    <a class="span4 btn btn-warning btn-large">
+      Stop
+    </a>
+  </div>
+</div>
+<div class="container"> 
+  <div class="row-fluid">
+    <div class="well console-holder">
+    </div>
+  </div>
+</div>
+<script>
 $(function(){
-	new Follower().bind();
+  new Follower().bind();
 })
+</script>
 </body>
 </html>

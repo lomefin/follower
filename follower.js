@@ -73,13 +73,13 @@ Follower = (function() {
         	url : 'http://www.routing.uc.cl/log_gps',
 			type:'POST',
             data: {
-            	sender:'unknown',
+            	sender:'follower',
         		position: positionString + "("+accurancy+")",
         		extra_data:timestamp
             }
         }
 
-        $.ajax(options).done(function(data){FollowerLogger.log("Data sent")});	
+        $.ajax(options).done(function(data){FollowerLogger.log("Data sent: "+ data)});	
 
     	});
 

@@ -64,14 +64,23 @@ Follower = (function() {
     
     navigator.geolocation.getCurrentPosition(function(position){
     	window.lastPosition = position;
-    	var positionString = "<"
-        for(key in position.coords)
-        {
-        	positionString += key + ":" +position.coords[key]+", ";
+    	var positionString = position.latitude + " , " + position.longitude 
+        var timestamp = "timestamp: " + position.timestamp
+        var accurancy = position.accurancy;
+        var _data = "" + timestamp + "> " + positionString + " " + accurancy ;
+        FollowerLogger.log(_data);
+        var options = {
+        	url : 'http://www.routing.uc.cl/log_gps',
+			type:'POST',
+            data: {
+            	sender:'unknown',
+        		position: positionString + "("+accurancy+")",
+        		extra_data:timestamp
+            }
         }
-        positionString += ">"
-        timestamp = "timestamp: " + position.timestamp
-        FollowerLogger.log("New position " + positionString + " " + timestamp) ;
+
+        $.ajax(options).done(function(data){FollowerLogger.log("Data sent")});	
+
     	});
 
     return null;

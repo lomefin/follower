@@ -53,7 +53,7 @@ Follower = (function() {
     this.status = 'TRACKING';
     _this = this;
 
-    navigator.geolocation.watchPosition(function(){});
+    this.watchId = navigator.geolocation.watchPosition(function(){});
     return this.log("Track started");
   };
 
@@ -63,7 +63,6 @@ Follower = (function() {
     _this = this;
     
     navigator.geolocation.getCurrentPosition(function(position){
-    	FollowerLogger.log("current");
     	window.lastPosition = position;
     	var positionString = "<"
         for(key in position.coords)
@@ -80,7 +79,8 @@ Follower = (function() {
 
   Follower.prototype.stopTracking = function() {
     this.status = 'IDLE';
-    return this.log("Track stopped");
+    navigator.geolocation.clearWatch(this.watchId);
+    return FollowerLogger.log("Track stopped");
   };
 
   return Follower;

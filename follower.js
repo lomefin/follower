@@ -64,17 +64,18 @@ Follower = (function() {
     
     navigator.geolocation.getCurrentPosition(function(position){
     	window.lastPosition = position;
-    	var positionString = position.latitude + " , " + position.longitude 
+    	var positionString = position.coords.latitude + " , " + position.coords.longitude 
         var timestamp = "timestamp: " + position.timestamp
-        var accurancy = position.accurancy;
-        var _data = "" + timestamp + "> " + positionString + " " + accurancy ;
+        var accuracy = position.coords.accuracy;
+        var _data = "" + timestamp + "> " + positionString + " " + accuracy ;
         FollowerLogger.log(_data);
+
         var options = {
         	url : 'http://www.routing.uc.cl/log_gps',
 			type:'POST',
             data: {
             	sender:'follower',
-        		position: positionString + "("+accurancy+")",
+        		position: positionString + "("+accuracy+")",
         		extra_data:timestamp
             }
         }

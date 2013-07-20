@@ -53,30 +53,8 @@ Follower = (function() {
     this.status = 'TRACKING';
     _this = this;
 
-    this.watchId = navigator.geolocation.watchPosition(
-    	function(){
-    		window.lastPosition = position;
-	    	var positionString = position.coords.latitude + " , " + position.coords.longitude 
-	        var timestamp = "timestamp: " + position.timestamp
-	        var accuracy = position.coords.accuracy;
-	        var _data = "" + timestamp + "> " + positionString + " " + accuracy ;
-	        FollowerLogger.log(_data);
-
-	        var options = {
-	        	url : 'http://www.routing.uc.cl/log_gps',
-				type:'POST',
-	            data: {
-	            	sender:'follower',
-	        		position: positionString + "("+accuracy+")",
-	        		extra_data:timestamp
-	            }
-	        }
-
-	        $.ajax(options).done(function(data){FollowerLogger.log("Data sent: "); FollowerLogger.log(data);});	
-    	},
-    	function(){},
-    	{timeout: 10000 , enableHighAccuracy: true}
-    );
+    this.watchId = navigator.geolocation.watchPosition(function(){});
+    setInterval(_this.currentPosition,1000);
     return this.log("Track started");
   };
 

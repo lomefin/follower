@@ -54,7 +54,7 @@ Follower = (function() {
     _this = this;
 
     this.watchId = navigator.geolocation.watchPosition(function(){});
-    setInterval(_this.currentPosition,1000);
+    setInterval(_this.currentPosition,10000);
     return this.log("Track started");
   };
 

@@ -6,8 +6,13 @@ FollowerLogger = (function() {
 
   FollowerLogger.log = function(message) {
     var entry;
-    console.log("Follower logger", message);
-    entry = $('<p class="console-entry">').text(message);
+    var currentdate = new Date(); 
+	var time = 	currentdate.getHours() + ":"  
+                	+ currentdate.getMinutes() + ":" 
+                	+ currentdate.getSeconds(); + " > "
+    var moment = $('<span>').text(time);
+    var msg = $('<span>').text(message);
+    entry = $('<p class="console-entry">').append(moment).append(msg);
     return $('.console-holder').prepend(entry);
   };
 
@@ -42,7 +47,7 @@ Follower = (function() {
   };
 
   Follower.prototype.bind = function() {
-  	console.log ('binding')
+  	
   	this.log('binding')
     $('.action-button.track').on('click',this.startTracking);
     $('.action-button.current').on('click',this.currentPosition);
@@ -69,7 +74,6 @@ Follower = (function() {
         var timestamp = "timestamp: " + position.timestamp
         var accuracy = position.coords.accuracy;
         var _data = "" + timestamp + "> " + positionString + " " + accuracy ;
-        FollowerLogger.log(_data);
 
         var options = {
         	url : 'http://www.routing.uc.cl/log_gps',
@@ -80,8 +84,8 @@ Follower = (function() {
         		extra_data:timestamp
             }
         }
-
-        $.ajax(options).done(function(data){FollowerLogger.log("Data sent: "); FollowerLogger.log(data);});	
+        FollowerLogger.log(positionString);
+        $.ajax(options).done(function(data){});	
 
     	});
 

@@ -7,9 +7,9 @@ FollowerLogger = (function() {
   FollowerLogger.log = function(message) {
     var entry;
     var currentdate = new Date(); 
-	var time = 	currentdate.getHours() + ":"  
-                	+ currentdate.getMinutes() + ":" 
-                	+ currentdate.getSeconds(); + " > "
+    var time =  currentdate.getHours() + ":"  
+                    + currentdate.getMinutes() + ":" 
+                    + currentdate.getSeconds(); + " > "
     var moment = $('<span>').text(time);
     var msg = $('<span>').text(message);
     entry = $('<p class="console-entry">').append(moment).append(msg);
@@ -33,9 +33,9 @@ Follower = (function() {
   Follower.prototype.log = function(message) {
     var entry;
     var currentdate = new Date(); 
-	var time = 	currentdate.getHours() + ":"  
-                	+ currentdate.getMinutes() + ":" 
-                	+ currentdate.getSeconds(); + " > "
+    var time =  currentdate.getHours() + ":"  
+                    + currentdate.getMinutes() + ":" 
+                    + currentdate.getSeconds(); + " > "
     var moment = $('<span>').text(time);
     var msg = $('<span>').text(message);
     entry = $('<p class="console-entry">').append(moment).append(msg);
@@ -47,10 +47,22 @@ Follower = (function() {
   };
 
   Follower.prototype.bind = function() {
-  	
-  	this.log('binding')
+    
+    this.log('binding')
     $('.action-button.track').on('click',this.startTracking);
     $('.action-button.current').on('click',this.currentPosition);
+    this.log('registering...');
+    if (! window.localStorage.getItem('deviceName'))
+    {
+      var options = {
+        url : 'http://www.routing.uc.cl/reg_gps',
+        type:'GET',
+        data: {
+            sender:'follower',
+        }
+      }
+      $.ajax(options).done(function(data){console.log(data)}); 
+    }
     return $('.action-button.stop').click(this.stopTracking);
   };
 
@@ -69,25 +81,26 @@ Follower = (function() {
     _this = this;
     
     navigator.geolocation.getCurrentPosition(function(position){
-    	window.lastPosition = position;
-    	var positionString = position.coords.latitude + " , " + position.coords.longitude 
+        window.lastPosition = position;
+        var positionString = position.coords.latitude + " , " + position.coords.longitude 
         var timestamp = "timestamp: " + position.timestamp
         var accuracy = position.coords.accuracy;
         var _data = "" + timestamp + "> " + positionString + " " + accuracy ;
 
         var options = {
-        	url : 'http://www.routing.uc.cl/log_gps',
-			type:'POST',
+            url : 'http://www.routing.uc.cl/log_gps',
+            type:'POST',
             data: {
-            	sender:'follower',
-        		position: positionString + "("+accuracy+")",
-        		extra_data:timestamp
+                sender:'follower',
+                position: positionString ,
+                accuracy: accuracy,
+                timestamp: timestamp
             }
         }
         FollowerLogger.log(positionString);
-        $.ajax(options).done(function(data){});	
+        $.ajax(options).done(function(data){}); 
 
-    	});
+        });
 
     return null;
   };
@@ -110,7 +123,7 @@ if (window.Follower == null) {
 console.log("startTracking")
 watch_id = navigator.geolocation.watchPosition(
 
-	// Success
+    // Success
     function(position){
 
         //tracking_data.push(position);
@@ -119,7 +132,7 @@ watch_id = navigator.geolocation.watchPosition(
         positionString = "<"
         for(key in position.coords)
         {
-        	positionString += key + ":" +position.coords[key]+", ";
+            positionString += key + ":" +position.coords[key]+", ";
         }
         positionString += ">"
         timestamp = "timestamp: " + position.timestamp

@@ -24,7 +24,7 @@ Follower = (function() {
   var status;
 
   function Follower() {
-    this.stopTracking = __bind(this.stopTracking, this);
+    //this.stopTracking = __bind(this.stopTracking, this);
     this.startTracking = __bind(this.startTracking, this);
   }
 
@@ -49,11 +49,14 @@ Follower = (function() {
   Follower.prototype.bind = function() {
     
     this.log('binding')
-    $('.action-button.track').on('click',this.startTracking);
-    $('.action-button.current').on('click',this.currentPosition);
-    this.log('registering...');
+    _this = this;
+    $('.action-button.halt').on('click',_this.stopTracking);
+    $('.action-button.track').on('click',_this.startTracking);
+    $('.action-button.current').on('click',_this.currentPosition);
+    
     if (! window.localStorage.getItem('deviceName'))
     {
+      this.log('registering...');
       var options = {
         url : 'http://www.routing.uc.cl/reg_gps',
         type:'GET',
@@ -61,41 +64,60 @@ Follower = (function() {
             sender:'follower',
         }
       }
-      $.ajax(options).done(function(data){console.log(data)}); 
+      $.ajax(options).done(function(data){
+        window.data = data;
+        window.localStorage.setItem("deviceName",data);
+        FollowerLogger.log(data);
+      }); 
+    }else
+    {
+      this.log('Machine is ' + window.localStorage.getItem('deviceName'))
     }
     return $('.action-button.stop').click(this.stopTracking);
   };
 
   Follower.prototype.startTracking = function() {
-    this.status = 'TRACKING';
+    window.localStorage.setItem("status","tracking");
     _this = this;
 
-    this.watchId = navigator.geolocation.watchPosition(function(){});
-    setInterval(_this.currentPosition,10000);
+    this.watchId = navigator.geolocation.watchPosition(function(){console.log("Success")},function(){console.log("Error",arguments)},{frequency: 19000});
+    _this.currentPosition();
+    
+    this.intervalId = setInterval(_this.currentPosition,10000);
+    window.watchId = this.watchId;
+    window.intervalId = this.intervalId;
     return this.log("Track started");
   };
 
+  Follower.prototype.stopTracking = function() {
+    window.localStorage.setItem("status","stopped");
+    navigator.geolocation.clearWatch(window.watchId);
+    clearInterval(window.intervalId);
+    return FollowerLogger.log("Track stopped");
+  };
 
   Follower.prototype.currentPosition = function() {
-    this.status = 'TRACKING';
+    console.log("currentPosition");
+    //if (window.localStorage.getItem("status") != "tracking" ) return ;
     _this = this;
-    
+    if (!window.positions) window.positions = [];
     navigator.geolocation.getCurrentPosition(function(position){
         window.lastPosition = position;
         var positionString = position.coords.latitude + " , " + position.coords.longitude 
-        var timestamp = "timestamp: " + position.timestamp
+        var timestamp = position.timestamp
         var accuracy = position.coords.accuracy;
-        var _data = "" + timestamp + "> " + positionString + " " + accuracy ;
-
-        var options = {
-            url : 'http://www.routing.uc.cl/log_gps',
-            type:'POST',
-            data: {
-                sender:'follower',
+        var dataToSend = {
+                sender:window.localStorage.getItem('deviceName'),
                 position: positionString ,
                 accuracy: accuracy,
                 timestamp: timestamp
             }
+        window.positions.push(dataToSend);
+        window.localStorage.setItem("positions",window.positions);
+        var options = {
+            url : 'http://www.routing.uc.cl/log_gps',
+            type:'POST',
+            data: dataToSend
         }
         FollowerLogger.log(positionString);
         $.ajax(options).done(function(data){}); 
@@ -105,11 +127,7 @@ Follower = (function() {
     return null;
   };
 
-  Follower.prototype.stopTracking = function() {
-    this.status = 'IDLE';
-    navigator.geolocation.clearWatch(this.watchId);
-    return FollowerLogger.log("Track stopped");
-  };
+  
 
   return Follower;
 

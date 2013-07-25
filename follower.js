@@ -73,12 +73,59 @@ Follower = (function() {
     {
       this.log('Machine is ' + window.localStorage.getItem('deviceName'))
     }
-    return $('.action-button.stop').click(this.stopTracking);
+    if(!!window.localStorage.getItem("positions"))
+    {
+      window.positions = $.parseJSON(window.localStorage.getItem("positions"));
+    }else
+    {
+      window.positions = [];
+    }
+    setInterval(function(){
+      window.localStorage.setItem("positions",JSON.stringify(window.positions));  
+    },60000);
+
+    setInterval(function(){
+      var p = window.positions;
+      var ok = true;
+      if(!!p && p.length > 0 && ok)
+      {
+        var options = {
+          url : 'http://www.routing.uc.cl/log_gps',
+          type:'POST',
+          data: p[0]
+        }
+        $.ajax(options).done(function(data){
+          
+          for(i = 0; i < p.length; i++)
+          {
+            if (!!p[i] && p[i].timestamp == data.timestamp)
+            {
+              p.splice(i,1);
+
+            }
+          }
+        }).error(function(){
+          console.warn("Failed sending");
+          
+        });   
+      }
+      
+    },6000);
+    return true;
   };
 
   Follower.prototype.startTracking = function() {
     window.localStorage.setItem("status","tracking");
     _this = this;
+
+    if (!window.localStorage.getItem('segment'))
+    {
+      window.localStorage.setItem('segment',0);
+    }
+    else
+    {
+      window.localStorage.setItem('segment',parseInt(window.localStorage.getItem('segment'))+1);
+    }
 
     this.watchId = navigator.geolocation.watchPosition(function(){console.log("Success")},function(){console.log("Error",arguments)},{frequency: 19000});
     _this.currentPosition();
@@ -100,29 +147,42 @@ Follower = (function() {
     console.log("currentPosition");
     //if (window.localStorage.getItem("status") != "tracking" ) return ;
     _this = this;
-    if (!window.positions) window.positions = [];
+    
     navigator.geolocation.getCurrentPosition(function(position){
-        window.lastPosition = position;
-        var positionString = position.coords.latitude + " , " + position.coords.longitude 
-        var timestamp = position.timestamp
-        var accuracy = position.coords.accuracy;
-        var dataToSend = {
-                sender:window.localStorage.getItem('deviceName'),
-                position: positionString ,
-                accuracy: accuracy,
-                timestamp: timestamp
-            }
-        window.positions.push(dataToSend);
-        window.localStorage.setItem("positions",window.positions);
-        var options = {
-            url : 'http://www.routing.uc.cl/log_gps',
-            type:'POST',
-            data: dataToSend
-        }
-        FollowerLogger.log(positionString);
-        $.ajax(options).done(function(data){}); 
+      window.lastPosition = position;
+      var positionString = position.coords.latitude + " , " + position.coords.longitude 
+      var timestamp = position.timestamp
+      var accuracy = position.coords.accuracy;
+      var dataToSend = {
+              sender:window.localStorage.getItem('deviceName'),
+              segment:window.localStorage.getItem('segment'),
+              position: positionString ,
+              accuracy: accuracy,
+              timestamp: timestamp
+          }
+      window.positions.push(dataToSend);
+      
+      var options = {
+          url : 'http://www.routing.uc.cl/log_gps',
+          type:'POST',
+          data: dataToSend
+      }
+      FollowerLogger.log(positionString);
+      $.ajax(options).done(function(data){
+        console.log("Done. Data: ", data.timestamp);
+        var p = window.positions;
+        for(i = 0; i < p.length; i++)
+        {
+          if (!!p[i] && p[i].timestamp == data.timestamp)
+          {
+            console.log("Removing ",i,p[i]);
+            p.splice(i,1);
 
-        });
+          }
+        }
+      }); 
+
+    });
 
     return null;
   };

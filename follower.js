@@ -127,7 +127,7 @@ Follower = (function() {
       window.localStorage.setItem('segment',parseInt(window.localStorage.getItem('segment'))+1);
     }
 
-    this.watchId = navigator.geolocation.watchPosition(function(){console.log("Success")},function(){console.log("Error",arguments)},{frequency: 19000});
+    this.watchId = navigator.geolocation.watchPosition(function(){console.log("Success")},function(){console.log("Error",arguments)},{frequency: 19000, enableHighAccuracy:true});
     _this.currentPosition();
     
     this.intervalId = setInterval(_this.currentPosition,10000);

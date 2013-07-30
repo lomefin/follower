@@ -160,6 +160,9 @@ Follower = (function() {
               accuracy: accuracy,
               timestamp: timestamp
           }
+      if(!window.positions){ 
+        window.positions = [];
+      }    
       window.positions.push(dataToSend);
       
       var options = {

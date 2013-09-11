@@ -151,7 +151,7 @@ Follower = (function() {
     navigator.geolocation.getCurrentPosition(function(position){
       window.lastPosition = position;
       var positionString = position.coords.latitude + " , " + position.coords.longitude 
-      var timestamp = position.timestamp
+      var timestamp = new Date(position.timestamp);
       var accuracy = position.coords.accuracy;
       var dataToSend = {
               sender:window.localStorage.getItem('deviceName'),
@@ -160,6 +160,7 @@ Follower = (function() {
               accuracy: accuracy,
               timestamp: timestamp
           }
+      console.log(dataToSend);
       if(!window.positions){ 
         window.positions = [];
       }    

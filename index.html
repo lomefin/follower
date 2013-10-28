@@ -12,9 +12,29 @@
   <script src="follower.js"></script>
 </head>
 <body>
-
-<div class="container">
-  <h1>RoutingUC Follower</h1>
+<h1>RoutingUC Follower</h1>
+<div class="container" id="pair">
+  <div class="row-fluid">
+    <div class="span12">
+      <div id="pairForm">
+        <fieldset>
+          <legend>Registrar Dispositivo</legend>
+          <div class="control-group">
+            <input type="text" id="pairToken" placeholder="Token" />
+          </div>
+          <div class="control-group">
+            <input type="text" id="pairNickname" placeholder="Nickname" />
+          </div>
+          <div class="control-group">
+            <button type="submit" id="pairSubmit" class="btn btn-primary">Submit</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container" id="follow">
+  
   <div class="row-fluid">
     <a class="span5 btn btn-primary btn-large action-button track">
       Start

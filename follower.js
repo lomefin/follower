@@ -49,6 +49,32 @@ Follower = (function() {
 
   };
 
+  Follower.prototype.pair = function(evt) {
+    
+    var token = $('#token').val();
+    var nickname = $('#nickname').val();
+    var options = {
+      url: 'http://admin.rem.routing.uc.cl/api/new_device/',
+      type: 'POST',
+      contentType: 'application/json',
+      data:
+      {
+        token: token,
+        device_id: window.localStorage.getItem('deviceName'),
+        nickname: nickname
+      }
+    }
+    FollowerLogger.log("Pareando...")
+    $.ajax(options).done(function(data){
+        FollowerLogger.log("Pareado");
+        $('#pairForm').hide();
+      }).fail(function(data){
+        FollowerLogger.log("Error pareando");
+      }); 
+    evt.stopPropagation();
+    return false;
+  }
+
   Follower.prototype.bind = function() {
     
     this.log('binding')
@@ -56,7 +82,8 @@ Follower = (function() {
     $('.action-button.halt').on('click',_this.stopTracking);
     $('.action-button.track').on('click',_this.startTracking);
     $('.action-button.current').on('click',_this.currentPosition);
-    
+    $('#pairSubmit').on('click',_this.pair);
+
     if (! window.localStorage.getItem('deviceName'))
     {
       this.log('registering...');
@@ -74,7 +101,7 @@ Follower = (function() {
       }); 
     } else
     {
-      this.log('Machine is ' + window.localStorage.getItem('deviceName'))
+      $('#pair').hide();
     };
     if(!!window.localStorage.getItem("positions"))
     {

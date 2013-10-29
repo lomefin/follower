@@ -85,6 +85,7 @@ Follower = (function() {
 
     if (! window.localStorage.getItem('deviceName'))
     {
+      /*
       this.log('registering...');
       var options = {
         url : 'http://www.routing.uc.cl/reg_gps',
@@ -98,9 +99,13 @@ Follower = (function() {
         window.localStorage.setItem("deviceName",data);
         FollowerLogger.log(data);
       }); 
+      */
+      FollowerLogger.log('Setting Device ID to ', device.uuid);
+      window.localStorage.setItem("deviceName", device.uuid);
     } else
     {
       $('#pair').hide();
+      FollowerLogger.log('Device ID is', device.uuid);
     };
     if(!!window.localStorage.getItem("positions"))
     {

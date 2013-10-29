@@ -57,6 +57,8 @@ Follower = (function() {
       device_id: window.localStorage.getItem('deviceName'),
       nickname: nickname
     };
+    FollowerLogger.log('(pair) Device UUID is', device.uuid)
+    FollowerLogger.log('Sending JSON: ', JSON.stringify(new_device_request))
     var options = {
       url: 'http://admin.rem.routing.uc.cl/api/new_device/',
       type: 'POST',
@@ -77,6 +79,7 @@ Follower = (function() {
   Follower.prototype.bind = function() {
     
     this.log('binding')
+    this.log('(bind) Device ID is', device.uuid);
     _this = this;
     $('.action-button.halt').on('click',_this.stopTracking);
     $('.action-button.track').on('click',_this.startTracking);

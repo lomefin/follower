@@ -75,7 +75,7 @@ Follower = (function() {
   }
 
   Follower.prototype.bind = function() {
-    this.log('binding')
+    this.log('binding', device.uuid);
     _this = this;
     $('.action-button.halt').on('click',_this.stopTracking);
     $('.action-button.track').on('click',_this.startTracking);

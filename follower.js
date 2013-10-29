@@ -50,22 +50,20 @@ Follower = (function() {
   };
 
   Follower.prototype.pair = function(evt) {
-    var token = $('#token').val();
-    var nickname = $('#nickname').val();
+    var token = $('#pairToken').val();
+    var nickname = $('#pairNickname').val();
     var new_device_request = {
       token: token,
       device_id: window.localStorage.getItem('deviceName'),
       nickname: nickname
     };
-    FollowerLogger.log('(pair) Device UUID is', device.uuid)
-    FollowerLogger.log('Sending JSON: ', JSON.stringify(new_device_request))
     var options = {
       url: 'http://admin.rem.routing.uc.cl/api/new_device/',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(new_device_request)
-    }
-    FollowerLogger.log("Pareando...")
+    };
+    FollowerLogger.log("Pareando...");
     $.ajax(options).done(function(data){
         FollowerLogger.log("Pareado");
         $('#pairForm').hide();
@@ -77,9 +75,7 @@ Follower = (function() {
   }
 
   Follower.prototype.bind = function() {
-    
     this.log('binding')
-    this.log('(bind) Device ID is', device.uuid);
     _this = this;
     $('.action-button.halt').on('click',_this.stopTracking);
     $('.action-button.track').on('click',_this.startTracking);
@@ -88,7 +84,6 @@ Follower = (function() {
 
     if (! window.localStorage.getItem('deviceName'))
     {
-      /*
       this.log('registering...');
       var options = {
         url : 'http://www.routing.uc.cl/reg_gps',
@@ -96,19 +91,15 @@ Follower = (function() {
         data: {
             sender:'follower',
         }
-      }
+      };
       $.ajax(options).done(function(data){
         window.data = data;
         window.localStorage.setItem("deviceName",data);
         FollowerLogger.log(data);
       }); 
-      */
-      FollowerLogger.log('Setting Device ID to ', device.uuid);
-      window.localStorage.setItem("deviceName", device.uuid);
     } else
     {
       $('#pair').hide();
-      FollowerLogger.log('Device ID is', device.uuid);
     };
     if(!!window.localStorage.getItem("positions"))
     {

@@ -24,21 +24,18 @@ FollowerLogger = (function() {
 })();
 
 Follower = (function() {
-  var status;
-
   function Follower() {
     //this.stopTracking = __bind(this.stopTracking, this);
     this.startTracking = __bind(this.startTracking, this);
   }
 
-  status = 'IDLE';
-
   Follower.prototype.log = function(message) {
     var entry;
-    var currentdate = new Date(); 
-    var time =  currentdate.getHours() + ":"  
-                    + currentdate.getMinutes() + ":" 
-                    + currentdate.getSeconds(); + " > "
+    var currentdate = new Date();
+    var time = currentdate.toLocaleTimeString();
+    /* var time =  currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds(); + " > " */
     var moment = $('<span>').text(time);
     var msg = $('<span>').text(message);
     entry = $('<p class="console-entry">').append(moment).append(msg);
@@ -63,28 +60,40 @@ Follower = (function() {
       contentType: 'application/json',
       data: JSON.stringify(new_device_request)
     };
-    FollowerLogger.log("Pareando...");
+    FollowerLogger.log("Pairing...");
     $.ajax(options).done(function(data){
-        FollowerLogger.log("Pareado");
+        window.localStorage.setItem('deviceIsPaired', 'true');
+        FollowerLogger.log("Paired successfully");
         $('#pairForm').hide();
       }).fail(function(data){
-        FollowerLogger.log("Error pareando");
-      }); 
+        window.localStorage.setItem('deviceIsPaired', 'false');
+        FollowerLogger.log("Error pairing");
+      });
     evt.stopPropagation();
     return false;
   }
 
   Follower.prototype.bind = function() {
-    this.log('binding');
+    this.log('Binding...');
     _this = this;
     $('.action-button.halt').on('click',_this.stopTracking);
     $('.action-button.track').on('click',_this.startTracking);
     $('.action-button.current').on('click',_this.currentPosition);
     $('#pairSubmit').on('click',_this.pair);
 
-    if (! window.localStorage.getItem('deviceName'))
-    {
-      this.log('registering...');
+    // Set initial status
+    window.localStorage.setItem('status', 'stopped');
+
+    // Use device UUID as sender ID if available
+    if (window.device.uuid) {
+      console.log('Device UUID is', window.device.uuid);
+      window.localStorage.setItem("deviceName", window.device.uuid);
+    };
+
+    // If device UUID is unavailable, request sender ID from remote service
+    if (! window.localStorage.getItem('deviceName')) {
+      console.log('No sender ID found, requesting one...');
+      this.log('Registering...');
       var options = {
         url : 'http://www.routing.uc.cl/reg_gps',
         type:'GET',
@@ -94,13 +103,22 @@ Follower = (function() {
       };
       $.ajax(options).done(function(data){
         window.data = data;
-        window.localStorage.setItem("deviceName",data);
-        FollowerLogger.log(data);
-      }); 
-    } else
-    {
-      $('#pair').hide();
+        window.localStorage.setItem("deviceName", data);
+        /* FollowerLogger.log('Got sender ID: ' + data); */
+      });
+    } else {
+      console.log('Found sender ID: ' + window.localStorage.getItem('deviceName'));
     };
+
+    this.log('Sender ID: ' + window.localStorage.getItem('deviceName'));
+
+    if (window.localStorage.getItem('deviceIsPaired') == 'true') {
+      console.log('Device already paired');
+      $('#pair').hide();
+    } else {
+      this.log('Device not paired yet');
+    };
+
     if(!!window.localStorage.getItem("positions"))
     {
       window.positions = $.parseJSON(window.localStorage.getItem("positions"));
@@ -111,7 +129,7 @@ Follower = (function() {
 
     setInterval(function(){
       window.localStorage.setItem("positions",JSON.stringify(window.positions));  
-    }, 60000);
+    }, 60*1000);
 
     setInterval(function(){
       var p = window.positions;
@@ -147,23 +165,50 @@ Follower = (function() {
         });
       }
       
-    }, 6000);
+    }, 6*1000);
 
+    /*
+    setTimeout(
+      function() {
+        if (window.localStorage.getItem('status') == 'tracking') {
+          console.log('Track ' + window.localStorage.getItem('segment') + ' already in progress while binding. Restarting it...');
+          _this.startTracking(true);
+        };
+      },
+      5*1000
+    );
+    */
+    if (window.localStorage.getItem('status') == 'tracking') {
+      console.log('Track ' + window.localStorage.getItem('segment') + ' already in progress while binding. Killing it...');
+      window.localStorage.setItem('deadSegment', window.localStorage.getItem('segment'));
+      window.localStorage.setItem('status', 'stopped');
+      window.localStorage.removeItem('segment');
+    };
+
+    console.log('Finished binding');
     return true;
   };
 
   Follower.prototype.startTracking = function() {
-    window.localStorage.setItem("status","tracking");
+    console.log('StartTracking...');
+
     _this = this;
+
+    if (window.localStorage.getItem('status') == 'tracking') {
+      return FollowerLogger.log('Track already in progress: ' + window.localStorage.getItem('segment'));
+    };
+
+    window.localStorage.setItem("status","tracking");
 
     if (!window.localStorage.getItem('segment'))
     {
-      window.localStorage.setItem('segment',0);
+      // window.localStorage.setItem('segment',0);
+      window.localStorage.setItem('segment', new Date().getTime());
     }
     else
     {
-      window.localStorage.setItem('segment',parseInt(window.localStorage.getItem('segment'))+1);
-    }
+      // window.localStorage.setItem('segment',parseInt(window.localStorage.getItem('segment'))+1);
+    };
 
     this.watchId = navigator.geolocation.watchPosition(
       function() {console.log("Success (watchPosition)")},
@@ -172,18 +217,31 @@ Follower = (function() {
     );
     _this.currentPosition();
     
-    this.intervalId = setInterval(_this.currentPosition,10000);
+    this.intervalId = setInterval(_this.currentPosition, 10*1000);
     window.watchId = this.watchId;
     window.intervalId = this.intervalId;
-    return this.log("Track started");
+    return this.log('Track started: ' + window.localStorage.getItem('segment'));
   };
 
+
   Follower.prototype.stopTracking = function() {
+    console.log('stopTracking...');
+
+    if (window.localStorage.getItem('status') != 'tracking') {
+      return FollowerLogger.log('No track in progress');
+    };
+
+    var current_segment = window.localStorage.getItem('segment');
+    var current_status = window.localStorage.getItem('status');
+    console.log('Stopping tracking. Status was:', current_status);
+
     window.localStorage.setItem("status","stopped");
     navigator.geolocation.clearWatch(window.watchId);
     clearInterval(window.intervalId);
-    return FollowerLogger.log("Track stopped");
+    window.localStorage.removeItem('segment');
+    return FollowerLogger.log('Track stopped: ' + current_segment);
   };
+
 
   Follower.prototype.currentPosition = function() {
     //console.log("currentPosition");
@@ -192,7 +250,7 @@ Follower = (function() {
     
     navigator.geolocation.getCurrentPosition(function(position){
       window.lastPosition = position;
-      var positionString = position.coords.latitude + " , " + position.coords.longitude 
+      var positionString = position.coords.latitude + ' ' + position.coords.longitude 
       // var timestamp = new Date(position.timestamp);
       // var accuracy = position.coords.accuracy;
       var dataToSend = {

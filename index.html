@@ -1,62 +1,66 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>RoutingUC Follower</title>
+  <head>
+    <title>RoutingUC Follower</title>
 
-  <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-  <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css' />
-  <link href="follower.css" rel='stylesheet' type='text/css' />
-  <script src="cordova-1.7.0.js"></script>
-  <script src="jquery.min.js"></script>
-  <script src="follower.js"></script>
-</head>
-<body>
-<h1>RoutingUC Follower</h1>
-<div class="container" id="pair">
-  <div class="row-fluid">
-    <div class="span12">
-      <form id="pairForm">
-        <fieldset>
-          <legend>Registrar Dispositivo</legend>
-          <div class="control-group">
-            <input type="text" id="pairToken" placeholder="Token" />
-          </div>
-          <div class="control-group">
-            <input type="text" id="pairNickname" placeholder="Nickname" />
-          </div>
-          <div class="control-group">
-            <button type="submit" id="pairSubmit" class="btn btn-primary">Submit</button>
-          </div>
-        </fieldset>
-      </form>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css' />
+    <link href="follower.css" rel='stylesheet' type='text/css' />
+
+    <script src="cordova-1.7.0.js"></script>
+    <script src="jquery.min.js"></script>
+    <script src="follower.js"></script>
+  </head>
+  <body>
+    <h1>Routing<span class="logo-uc">UC</span> Follower</h1>
+
+    <div class="container" id="pair">
+      <div class="row-fluid">
+        <div class="span12">
+          <form id="pairForm">
+            <fieldset>
+              <legend>Registrar Dispositivo</legend>
+              <div class="control-group">
+                <input type="text" id="pairToken" placeholder="Token" />
+              </div>
+              <div class="control-group">
+                <input type="text" id="pairNickname" placeholder="Nickname" />
+              </div>
+              <div class="control-group">
+                <button type="submit" id="pairSubmit" class="btn btn-primary">Submit</button>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="container" id="follow">
-  
-  <div class="row-fluid">
-    <a class="span5 btn btn-primary btn-large action-button track">
-      Start
-    </a>
-    <a class="span2 btn btn-large action-button current">
-      Get Current
-    </a>
-    <a class="span5 btn btn-warning btn-large action-button halt" style="">
-      Stop
-    </a>
-  </div>
-</div>
-<div class="container"> 
-  <div class="row-fluid">
-    <div class="well console-holder">
+
+    <div class="container" id="follow">
+      <div class="row-fluid">
+        <a class="span5 btn btn-primary btn-large action-button track">
+          Start
+        </a>
+        <a class="span2 btn btn-large action-button current">
+          Get Current
+        </a>
+        <a class="span5 btn btn-warning btn-large action-button halt" style="">
+          Stop
+        </a>
+      </div>
     </div>
-  </div>
-</div>
-<script>
-$(function(){
-  new Follower().bind();
-})
-</script>
-</body>
+
+    <div class="container">
+      <div class="row-fluid">
+        <div class="well console-holder">
+        </div>
+      </div>
+    </div>
+
+    <script>
+    $(function(){
+      new Follower().bind();
+    })
+    </script>
+  </body>
 </html>

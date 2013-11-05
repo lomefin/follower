@@ -85,12 +85,11 @@ Follower = (function() {
     window.localStorage.setItem('status', 'stopped');
 
     // Use device UUID as sender ID if available
-    if (window.device.uuid) {
+    /* if (window.device.uuid) {
       console.log('Device UUID is', window.device.uuid);
       window.localStorage.setItem("deviceName", window.device.uuid);
-    };
+    }; */
 
-    // If device UUID is unavailable, request sender ID from remote service
     if (! window.localStorage.getItem('deviceName')) {
       console.log('No sender ID found, requesting one...');
       this.log('Registering...');

@@ -1,0 +1,7 @@
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+/*  src: local('Ubuntu'), url(http://themes.googleusercontent.com/static/fonts/ubuntu/v4/2Q-AW1e_taO6pHwMXcXW5w.ttf) format('truetype'); */
+  src: local('Ubuntu'), url('ubuntu.ttf') format('truetype');
+}

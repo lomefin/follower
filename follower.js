@@ -103,13 +103,11 @@ Follower = (function() {
       $.ajax(options).done(function(data){
         window.data = data;
         window.localStorage.setItem("deviceName", data);
-        /* FollowerLogger.log('Got sender ID: ' + data); */
+        this.log('Got sender ID: ' + window.localStorage.getItem('deviceName'));
       });
     } else {
-      console.log('Found sender ID: ' + window.localStorage.getItem('deviceName'));
+      this.log('Sender ID: ' + window.localStorage.getItem('deviceName'));
     };
-
-    this.log('Sender ID: ' + window.localStorage.getItem('deviceName'));
 
     if (window.localStorage.getItem('deviceIsPaired') == 'true') {
       console.log('Device already paired');
